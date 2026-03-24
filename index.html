@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Painel de Inadimplência de Horas</title>
+
+<style>
+/* -------------------------------- */
+/* VARIÁVEIS DO TEMA NEON          */
+/* -------------------------------- */
+:root {
+ --bg:#030b18;
+ --bg2:#071426;
+ --panel:#091a31;
+ --panel2:#0b1f3c;
+ --line:rgba(86,134,255,.16);
+ --text:#eef6ff;
+ --muted:#89a1c7;
+ --cyan:#17e7ff;
+ --blue:#32a6ff;
+ --green:#39ff14;
+ --orange:#ff9f1a;
+ --yellow:#ffe44d;
+ --red:#ff4d6d;
+ --pink:#ff2fb3;
+ --purple:#9a5cff;
+ --shadow:0 22px 60px rgba(0,0,0,.35);
+ --glow-cyan:0 0 24px rgba(23,231,255,.22);
+ --glow-green:0 0 24px rgba(57,255,20,.16);
+ --glow-pink:0 0 24px rgba(255,47,179,.16);
+ --glow-orange:0 0 24px rgba(255,159,26,.18);
+ --radius:24px;
+ --radius2:18px;
+}
+
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+ margin:0;
+ font-family: Inter, Segoe UI, Arial, sans-serif;
+ color:var(--text);
+ background:
+ radial-gradient(circle at top left, rgba(23,231,255,.09), transparent 24%),
+ radial-gradient(circle at top center, rgba(154,92,255,.07), transparent 18%),
+ radial-gradient(circle at bottom right, rgba(57,255,20,.05), transparent 20%),
+ linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+ min-height:100vh;
+}
+
+.page {
+ max-width: 1440px;
+ margin: 0 auto;
+ padding: 28px;
+}
+
+/* -------------------------------- */
+/* TOP BAR                          */
+/* -------------------------------- */
+.topbar {
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:18px;
+ margin-bottom: 18px;
+}
+
+.brand {
+ display:flex;
+ align-items:center;
+ gap:14px;
+}
+
+.brand-icon {
+ width:54px; height:54px; border-radius:18px;
+ background: linear-gradient(135deg, rgba(23,231,255,.22), rgba(50,166,255,.14));
+ border:1px solid rgba(23,231,255,.25);
+ box-shadow: var(--glow-cyan);
+ display:grid; place-items:center;
+ font-size:24px;
+}
+
+.meta { display:flex; gap:12px; flex-wrap:wrap; }
+.meta-badge {
+ padding:10px 14px;
+ border-radius:999px;
+ background:rgba(255,255,255,.04);
+ border:1px solid rgba(255,255,255,.07);
+ color:var(--muted);
+ font-size:13px;
+}
+
+/* -------------------------------- */
+/* HERO + PÓDIO                     */
+/* -------------------------------- */
+
+@keyframes podiumPulse {
+ 0%,100% { transform: translateY(0); }
+ 50% { transform: translateY(-6px); }
+}
+
+.podium-animated {
+ animation: podiumPulse 1.4s ease-in-out infinite;
+}
+
+.hero {
+ position:relative;
+ overflow:hidden;
+ border-radius: 32px;
+ padding: 28px;
+ background:
+ linear-gradient(135deg, rgba(8,28,58,.98), rgba(9,18,40,.95)),
+ linear-gradient(90deg, rgba(23,231,255,.08), transparent);
+ border:1px solid rgba(23,231,255,.18);
+ box-shadow: var(--shadow), var(--glow-cyan);
+}
+
+.hero-grid {
+ display:grid;
+ grid-template-columns: 1.5fr 0.9fr;
+ gap:20px;
+}
+
+/* Adaptado para pódio menor */
+.podium {
+ display:grid;
+ grid-template-columns: repeat(3, 1fr);
+ align-items:end;
+ gap:14px;
+ min-height:200px;
+}
+
+.podium-card {
+ border-radius:24px 24px 12px 12px;
+ padding:16px 14px;
+ text-align:center;
+ border:1px solid rgba(255,255,255,.08);
+ background: linear-gradient(180deg, rgba(13,29,56,.95), rgba(8,20,38,.95));
+ box-shadow: var(--shadow);
+}
+.podium-card .cup { font-size:28px; margin-bottom:8px; }
+.podium-card .who { font-size:16px; font-weight:800; }
+
+.podium-1 { border-color:rgba(255,228,77,.30); }
+.podium-2 { border-color:rgba(205,214,224,.24); }
+.podium-3 { border-color:rgba(255,159,26,.24); }
+
+/* -------------------------------- */
+/* OUTRAS SEÇÕES                    */
+/* -------------------------------- */
+
+.section {
+ background: linear-gradient(180deg, rgba(9,26,49,.96), rgba(7,18,36,.96));
+ border:1px solid var(--line);
+ border-radius:28px;
+ box-shadow: var(--shadow);
+ padding:22px;
+}
+
+.cards-grid {
+ display:grid;
+ grid-template-columns: 1fr 1fr;
+ gap:14px;
+}
+
+/* DexPara do Bem com 1 coluna */
+#emdia .cards-grid {
+ grid-template-columns: 1fr;
+}
+
+.person-card {
+ border-radius:22px;
+ padding:18px;
+ background: linear-gradient(180deg, rgba(13,29,56,.95), rgba(8,20,38,.95));
+ border:1px solid rgba(255,255,255,.07);
+}
+
+/* -------------------------------- */
+/* AREA FINAL                       */
+/* -------------------------------- */
+.fun-section {
+ margin-top:40px;
+ padding:30px;
+ border-radius:30px;
+ background: linear-gradient(180deg, #0f1320, #09101c);
+ border:1px solid rgba(255,255,255,.08);
+ box-shadow: var(--shadow);
+}
+
+.fun-title {
+ font-size:26px;
+ font-weight:800;
+ margin-bottom:10px;
+ color:#ffe44d;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+<!-- -------------------------------- -->
+<!-- TOPBAR                            -->
+<!-- -------------------------------- -->
+<div class="topbar">
+ <div class="brand">
+     <div class="brand-icon">⏱</div>
+     <div>
+         <h1>Relatório de Inadimplência</h1>
+         <p>Painel premium neon — versão da zoeira corporativa</p>
+     </div>
+ </div>
+
+ <div class="meta">
+     <div class="meta-badge">Atualizado agora</div>
+     <div class="meta-badge">Projetos monitorados: Tributário & Fiscal</div>
+     <div class="meta-badge">Humor do gestor: 🤡 “risos de nervoso”</div>
+ </div>
+</div>
+
+<!-- -------------------------------- -->
+<!-- HERO COM PÓDIO ANIMADO           -->
+<!-- -------------------------------- -->
+<section class="hero" id="dashboard">
+ <div class="hero-grid">
+
+     <!-- ESQUERDA: PÓDIO + TEXTO -->
+     <div style="display:flex; flex-direction:column; gap:24px;">
+
+         <!-- PÓDIO TOP -->
+         <div class="podium podium-animated">
+             <div class="podium-card podium-2 podium-animated">
+                 <div class="cup">🥈</div>
+                 <div class="who">Brigido Siga</div>
+             </div>
+
+             <div class="podium-card podium-1 podium-animated" style="animation-duration:1.2s;">
+                 <div class="cup">🥇</div>
+                 <div class="who">Alex Lucas</div>
+             </div>
+
+             <div class="podium-card podium-3 podium-animated" style="animation-duration:1.6s;">
+                 <div class="cup">🥉</div>
+                 <div class="who">Everaldo Junior</div>
+             </div>
+         </div>
+
+         <h2>Projeto sem hora lançada vira engenharia invisível.</h2>
+         <div class="sub">Aqui a gente controla, aponta, acompanha... e faz piada para amenizar.</div>
+
+         <div class="alert-box">
+             Se não lançar hora, o financeiro chora. E chora feio.
+         </div>
+     </div>
+
+     <!-- DIREITA: IMPACTO + FAROL -->
+     <div class="hero-side">
+         <div class="glass" id="impacto">
+             <div class="label">Impacto estimado no fechamento</div>
+             <div class="impact looping" id="impactValue">R$ 36 mil</div>
+             <div class="sub" style="font-size:14px; margin-top:8px;">Sim, é o suficiente para deixar o gestor sem Wi-Fi emocional.</div>
+         </div>
+
+         <div class="glass">
+             <div class="label">Farol do fechamento</div>
+
+             <div class="light">
+                 <div class="semaforo">
+                     <div class="dot red"></div>
+                     <div class="dot amber"></div>
+                     <div class="dot green"></div>
+                 </div>
+                 <div>
+                     <div class="status-title">VERMELHO</div>
+                     <div class="status-note">O nível de caos no timesheet está em “parabéns, você desbloqueou o modo hard”.</div>
+                 </div>
+             </div>
+         </div>
+     </div>
+ </div>
+</section>
+
+<!-- -------------------------------- -->
+<!-- SEÇÕES REORGANIZADAS            -->
+<!-- -------------------------------- -->
+
+<!-- 1) RANKING DA RODADA -->
+<section class="section" id="ranking-positivo">
+ <h3>Ranking da rodada</h3>
+ <p class="subtle">Eis os heróis do apontamento.</p>
+</section>
+
+<!-- 2) RANKING NEGATIVO -->
+<section class="section" id="ranking-negativo">
+ <h3>Ranking de atenção</h3>
+ <p class="subtle">Os guerreiros que precisam reagir (urgente, de preferência).</p>
+</section>
+
+<!-- 3) GRUPO DIA 23 -->
+<section class="section" id="inadimplencia">
+ <h3>Grupo com pendência no dia 23</h3>
+</section>
+
+<!-- 4) PENDÊNCIAS ESPECÍFICAS -->
+<section class="section" id="gamification">
+ <h3>Pendências e ajustes específicos</h3>
+</section>
+
+<!-- 5) DEXPARA DO BEM -->
+<section class="section" id="emdia">
+ <h3>DexPara do bem</h3>
+ <p class="subtle">Palmas para quem não dá trabalho.</p>
+</section>
+
+<!-- -------------------------------- -->
+<!-- MENSAGENS REMOVIDAS + HUMOR     -->
+<!-- -------------------------------- -->
+
+<section class="fun-section">
+ <div class="fun-title">📢 Mensagens que sobraram (e agora viraram piadas)</div>
+
+ <p>✅ <b>“Painel redesenhado em estilo premium neon...”</b><br>
+     Agora está aqui porque o pódio tomou o lugar — literalmente.</p>
+
+ <p>✅ <b>“Se liga nos apontamentos...”</b><br>
+     Isso foi movido para baixo porque o pódio precisava de espaço para brilhar e fazer dancinha.</p>
+
+ <p>😂 <b>Piadas bônus do time:</b></p>
+ <ul>
+     <li>Se o timesheet fosse obrigatório todo dia, metade da equipe pediria férias só por causa dele.</li>
+     <li>“Lançar hora atrasada” agora é esporte olímpico interno.</li>
+     <li>A meta do projeto é simples: <b>zerar pendências e evitar o olhar julgador do gestor.</b></li>
+     <li>Estamos avaliando criar o <i>PIX da vergonha</i>: cada dia sem lançar = R$ 1 para o cofrinho do café.</li>
+ </ul>
+
+ <p style="margin-top:20px; font-size:14px; color:#89a1c7;">
+     Obrigado por colaborar com este projeto público de saúde emocional do gestor.
+ </p>
+</section>
+
+<div class="footer" style="margin-top:20px; text-align:center; color:#89a1c7;">
+ Dados atualizados diariamente pelo RH • Versão Humorística 2.0
+</div>
+
+</div>
+
+<script>
+(function() {
+ const values = ["R$ 36 mil", "R$ 38 mil", "R$ 40 mil", "R$ 42 mil", "R$ 36 mil"];
+ const el = document.getElementById("impactValue");
+ let i = 0;
+ setInterval(() => {
+   i = (i + 1) % values.length;
+   el.textContent = values[i];
+ }, 1800);
+})();
+</script>
+
+</body>
+</html>
