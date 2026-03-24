@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Painel de Inadimplência de Horas</title>
+<style>
+:root {
+  --bg:#030b18;
+  --bg2:#071426;
+  --panel:#091a31;
+  --panel2:#0b1f3c;
+  --line:rgba(86,134,255,.16);
+  --text:#eef6ff;
+  --muted:#89a1c7;
+
+  --cyan:#17e7ff;
+  --blue:#32a6ff;
+  --green:#39ff14;
+  --orange:#ff9f1a;
+  --yellow:#ffe44d;
+  --red:#ff4d6d;
+  --pink:#ff2fb3;
+  --purple:#9a5cff;
+
+  --shadow:0 22px 60px rgba(0,0,0,.35);
+  --glow-cyan:0 0 24px rgba(23,231,255,.22);
+  --glow-green:0 0 24px rgba(57,255,20,.16);
+  --glow-pink:0 0 24px rgba(255,47,179,.16);
+  --glow-orange:0 0 24px rgba(255,159,26,.18);
+  --radius:24px;
+  --radius2:18px;
+}
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+html,body { margin:0; }
+body {
+  font-family: Inter, Segoe UI, Arial, sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(23,231,255,.09), transparent 24%),
+    radial-gradient(circle at top center, rgba(154,92,255,.07), transparent 18%),
+    radial-gradient(circle at bottom right, rgba(57,255,20,.05), transparent 20%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+  min-height:100vh;
+}
+.page {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 28px;
+}
+.topbar {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom: 18px;
+}
+.brand {
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.brand-icon {
+  width:54px; height:54px; border-radius:18px;
+  background: linear-gradient(135deg, rgba(23,231,255,.22), rgba(50,166,255,.14));
+  border:1px solid rgba(23,231,255,.25);
+  box-shadow: var(--glow-cyan);
+  display:grid; place-items:center;
+  font-size:24px;
+}
+.brand h1 {
+  margin:0; font-size:28px; font-weight:800; letter-spacing:.2px;
+}
+.brand p {
+  margin:4px 0 0; color:var(--muted); font-size:14px;
+}
+.meta {
+  display:flex; gap:12px; flex-wrap:wrap;
+}
+.meta-badge {
+  padding:10px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);
+  color:var(--muted);
+  font-size:13px;
+}
+
+.hero {
+  position:relative;
+  overflow:hidden;
+  border-radius: 32px;
+  padding: 28px;
+  background:
+    linear-gradient(135deg, rgba(8,28,58,.98), rgba(9,18,40,.95)),
+    linear-gradient(90deg, rgba(23,231,255,.08), transparent);
+  border:1px solid rgba(23,231,255,.18);
+  box-shadow: var(--shadow), var(--glow-cyan);
+}
+.hero:before {
+  content:"";
+  position:absolute;
+  inset:-30% auto auto -10%;
+  width:360px;
+  height:360px;
+  background: radial-gradient(circle, rgba(23,231,255,.18), transparent 60%);
+  pointer-events:none;
+}
+.hero:after {
+  content:"";
+  position:absolute;
+  right:-120px; top:-70px;
+  width:360px; height:360px;
+  background: radial-gradient(circle, rgba(154,92,255,.16), transparent 60%);
+  pointer-events:none;
+}
+.hero-grid {
+  position:relative;
+  z-index:2;
+  display:grid;
+  grid-template-columns: 1.4fr .9fr;
+  gap:18px;
+}
+.hero h2 {
+  margin:0 0 10px;
+  font-size:42px;
+  line-height:1.05;
+}
+.hero .sub {
+  color:var(--muted);
+  font-size:17px;
+  line-height:1.5;
+  max-width:900px;
+}
+.alert-box {
+  margin-top:16px;
+  padding:16px 18px;
+  border-radius:18px;
+  background:linear-gradient(135deg, rgba(255,159,26,.12), rgba(255,77,109,.10));
+  border:1px solid rgba(255,159,26,.24);
+  box-shadow: var(--glow-orange);
+  color:#ffe7be;
+  font-size:16px;
+}
+.hero-side {
+  display:grid;
+  gap:14px;
+}
+.glass {
+  border-radius:22px;
+  padding:18px;
+  background: linear-gradient(180deg, rgba(11,31,60,.92), rgba(8,20,40,.92));
+  border:1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+.glass .label {
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:8px;
+}
+.impact {
+  font-size:38px;
+  font-weight:800;
+  color:var(--orange);
+  text-shadow: 0 0 18px rgba(255,159,26,.2);
+}
+.light {
+  display:flex;
+  gap:16px;
+  align-items:center;
+}
+.semaforo {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:14px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.07);
+  background:rgba(1,9,20,.55);
+}
+.dot {
+  width:34px; height:34px; border-radius:50%;
+}
+.dot.red { background:var(--red); box-shadow:0 0 18px rgba(255,77,109,.55); }
+.dot.amber { background:var(--orange); opacity:.45; }
+.dot.green { background:var(--green); opacity:.16; }
+.status-title {
+  font-size:28px; font-weight:800; color:#ffd0d8;
+}
+.status-note {
+  color:var(--muted); line-height:1.5;
+}
+
+.kpis {
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:16px;
+  margin-top:18px;
+}
+.kpi {
+  padding:20px;
+  border-radius:24px;
+  background: linear-gradient(180deg, rgba(9,26,49,.98), rgba(7,18,36,.96));
+  border:1px solid var(--line);
+  box-shadow: var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+.kpi:before {
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width:4px;
+  background: linear-gradient(180deg, var(--cyan), transparent);
+}
+.kpi.green:before { background: linear-gradient(180deg, var(--green), transparent); }
+.kpi.pink:before { background: linear-gradient(180deg, var(--pink), transparent); }
+.kpi.orange:before { background: linear-gradient(180deg, var(--orange), transparent); }
+.kpi .label { color:var(--muted); font-size:13px; }
+.kpi .value { margin-top:8px; font-size:34px; font-weight:800; }
+.kpi .desc { margin-top:8px; color:#c6d5eb; font-size:13px; line-height:1.45; }
+
+.main {
+  margin-top:18px;
+  display:grid;
+  grid-template-columns: 280px 1fr;
+  gap:18px;
+}
+.sidebar {
+  background: linear-gradient(180deg, rgba(7,19,37,.96), rgba(5,13,28,.96));
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:28px;
+  box-shadow: var(--shadow);
+  padding:18px;
+  height:max-content;
+  position:sticky;
+  top:18px;
+}
+.side-title {
+  font-size:18px; font-weight:700; margin:0 0 14px;
+}
+.side-item {
+  display:flex; align-items:center; gap:12px;
+  text-decoration:none;
+  cursor:pointer;
+  padding:14px 14px;
+  border-radius:18px;
+  margin-bottom:10px;
+  background: rgba(255,255,255,.02);
+  border:1px solid transparent;
+  color:#d8e5fa;
+}
+.side-item.active {
+  background: linear-gradient(90deg, rgba(23,231,255,.14), rgba(23,231,255,.04));
+  border-color: rgba(23,231,255,.18);
+  box-shadow: var(--glow-cyan);
+}
+.side-item:hover {
+  border-color: rgba(23,231,255,.14);
+  box-shadow: 0 0 16px rgba(23,231,255,.10);
+  transform: translateX(2px);
+  transition: all .22s ease;
+}
+.side-icon {
+  width:38px; height:38px; border-radius:12px;
+  display:grid; place-items:center;
+  background: linear-gradient(135deg, rgba(23,231,255,.18), rgba(50,166,255,.08));
+  color:var(--cyan);
+  font-size:18px;
+}
+.workspace {
+  display:grid;
+  gap:18px;
+}
+.section {
+  background: linear-gradient(180deg, rgba(9,26,49,.96), rgba(7,18,36,.96));
+  border:1px solid var(--line);
+  border-radius:28px;
+  box-shadow: var(--shadow);
+  padding:22px;
+  position:relative;
+  overflow:hidden;
+}
+.section:before {
+  content:"";
+  position:absolute;
+  top:-120px; right:-120px;
+  width:220px; height:220px;
+  background: radial-gradient(circle, rgba(23,231,255,.08), transparent 64%);
+  pointer-events:none;
+}
+.section-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:14px;
+  margin-bottom:16px;
+}
+.section h3 {
+  margin:0;
+  font-size:24px;
+}
+.section p.subtle {
+  margin:6px 0 0;
+  color:var(--muted);
+}
+.section-actions {
+  display:flex; gap:10px; flex-wrap:wrap;
+}
+.btn {
+  padding:12px 16px;
+  border:none;
+  border-radius:16px;
+  color:white;
+  font-weight:700;
+  letter-spacing:.2px;
+  cursor:default;
+  background: linear-gradient(135deg, rgba(23,231,255,.18), rgba(50,166,255,.14));
+  border:1px solid rgba(23,231,255,.22);
+  box-shadow: var(--glow-cyan);
+}
+.btn.green {
+  background: linear-gradient(135deg, rgba(57,255,20,.18), rgba(57,255,20,.08));
+  border-color: rgba(57,255,20,.24);
+  box-shadow: var(--glow-green);
+}
+.btn.orange {
+  background: linear-gradient(135deg, rgba(255,159,26,.18), rgba(255,159,26,.08));
+  border-color: rgba(255,159,26,.24);
+  box-shadow: var(--glow-orange);
+}
+
+.cards-grid {
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:14px;
+}
+.person-card {
+  border-radius:22px;
+  padding:18px;
+  background: linear-gradient(180deg, rgba(13,29,56,.95), rgba(8,20,38,.95));
+  border:1px solid rgba(255,255,255,.07);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  animation: fadeUp .45s ease both;
+}
+.person-card:hover {
+  transform: translateY(-3px);
+}
+.person-card.good {
+  border-color: rgba(57,255,20,.20);
+  box-shadow: var(--shadow), var(--glow-green);
+}
+.person-card.danger {
+  border-color: rgba(255,77,109,.18);
+  box-shadow: var(--shadow), var(--glow-pink);
+}
+.person-top {
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:12px;
+}
+.avatar {
+  width:46px; height:46px; border-radius:16px;
+  display:grid; place-items:center;
+  font-size:20px; font-weight:800;
+}
+.avatar.good {
+  background: linear-gradient(135deg, rgba(57,255,20,.22), rgba(57,255,20,.08));
+  color:#a8ff95;
+}
+.avatar.warn {
+  background: linear-gradient(135deg, rgba(255,77,109,.22), rgba(255,47,179,.08));
+  color:#ffc2d0;
+}
+.person-head h3 {
+  margin:0 0 6px; font-size:18px;
+}
+.pill {
+  display:inline-block;
+  padding:7px 10px;
+  border-radius:999px;
+  font-size:12px;
+  color:#dfe9ff;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+}
+.person-card p {
+  margin:0;
+  color:#d5e3f6;
+  line-height:1.5;
+}
+
+.rank-grid {
+  display:grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap:14px;
+}
+.rank-card {
+  border-radius:22px;
+  padding:16px 18px;
+  background: linear-gradient(180deg, rgba(13,29,56,.95), rgba(8,20,38,.95));
+  border:1px solid rgba(255,255,255,.07);
+  box-shadow: var(--shadow);
+  animation: fadeUp .45s ease both;
+}
+.rank-card.good {
+  border-color: rgba(57,255,20,.20);
+  box-shadow: var(--shadow), var(--glow-green);
+}
+.rank-card.bad {
+  border-color: rgba(255,77,109,.16);
+  box-shadow: var(--shadow), var(--glow-pink);
+}
+.rank-line {
+  display:grid;
+  grid-template-columns: 54px 1fr auto;
+  align-items:center;
+  gap:12px;
+}
+.rank-num {
+  width:44px; height:44px;
+  border-radius:14px;
+  display:grid; place-items:center;
+  background: linear-gradient(135deg, rgba(23,231,255,.18), rgba(50,166,255,.10));
+  color:var(--cyan);
+  font-weight:800;
+}
+.rank-name {
+  font-size:17px; font-weight:700;
+}
+.rank-score {
+  font-size:24px; font-weight:800;
+  color: var(--orange);
+}
+.rank-card.good .rank-score { color: var(--green); }
+.rank-card.bad .rank-score { color: var(--red); }
+.rank-note {
+  margin-top:10px;
+  color:#cfe0f6;
+  line-height:1.5;
+}
+
+.footer {
+  margin-top:6px;
+  color:var(--muted);
+  font-size:13px;
+  text-align:right;
+}
+
+.float-tag {
+  position:absolute;
+  top:18px; right:18px;
+  padding:10px 14px;
+  border-radius:999px;
+  font-size:12px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.08);
+  color:var(--muted);
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(10px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+@media (max-width: 1100px) {
+  .hero-grid, .main, .kpis { grid-template-columns: 1fr; }
+  .cards-grid, .rank-grid { grid-template-columns: 1fr; }
+  .sidebar { position:relative; top:auto; }
+}
+@media print {
+  body { background:#fff; }
+  .page { max-width:none; padding:12px; }
+  .hero, .section, .sidebar, .kpi, .person-card, .rank-card {
+    box-shadow:none !important;
+    break-inside: avoid;
+  }
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon">⏱</div>
+      <div>
+        <h1>HoursGuard Neon</h1>
+        <p>Painel de inadimplência de horas • fechamento técnico do projeto</p>
+      </div>
+    </div>
+    <div class="meta">
+      <div class="meta-badge">Atualizado em 24/03/2026 06:36</div>
+      <div class="meta-badge">Projeto monitorado: CNPJ Alfanumérico</div>
+      <div class="meta-badge">Modo do gestor: cobrando com carinho</div>
+    </div>
+  </div>
+
+  <section class="hero" id="dashboard">
+    <div class="hero-grid">
+      <div>
+        <h2>Projeto sem hora lançada vira engenharia invisível.</h2>
+        <div class="sub">
+          Painel redesenhado em estilo neon premium, inspirado nos dashboards modernos que você mandou.
+          A brincadeira continua leve, mas o recado é sério: pendência de apontamento atrapalha fechamento,
+          leitura de alocação, visibilidade do projeto e machuca meu financeiro.
+        </div>
+        <div class="alert-box">
+          Se liga nos apontamentos: hora faltando, projeto errado ou classificação errada gera retrabalho,
+          ruído no fechamento e deixa o time parecendo menos eficiente do que realmente é.
+        </div>
+      </div>
+      <div class="hero-side">
+        <div class="glass" id="impacto">
+          <div class="label">Impacto estimado no fechamento</div>
+          <div class="impact">R$ 18,4 mil</div>
+          <div class="sub" style="font-size:14px; margin-top:8px;">Valor ilustrativo para assustar o suficiente e acelerar a regularização.</div>
+        </div>
+        <div class="glass">
+          <div class="label">Farol do fechamento</div>
+          <div class="light">
+            <div class="semaforo">
+              <div class="dot red"></div>
+              <div class="dot amber"></div>
+              <div class="dot green"></div>
+            </div>
+            <div>
+              <div class="status-title">VERMELHO</div>
+              <div class="status-note">Ainda existem pendências suficientes para bagunçar o fechamento e gerar cobrança extra do gestor.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="label">Pessoas com pendência</div>
+        <div class="value">16</div>
+        <div class="desc">Entre lançamentos faltantes, projeto incorreto e tipo de atividade errado.</div>
+      </div>
+      <div class="kpi green">
+        <div class="label">Pessoas em dia</div>
+        <div class="value">5</div>
+        <div class="desc">Nome no Excel e fora da cobrança. Até dia 26 e no projeto certo.</div>
+      </div>
+      <div class="kpi pink">
+        <div class="label">Meta do dia</div>
+        <div class="value">Zerar</div>
+        <div class="desc">Corrigir tudo hoje e evitar segunda rodada de cobrança.</div>
+      </div>
+      <div class="kpi orange">
+        <div class="label">Humor do gestor</div>
+        <div class="value">Oscilando</div>
+        <div class="desc">Tende a melhorar bastante quando o timesheet fecha certo.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="main">
+    <aside class="sidebar">
+      <div class="side-title">Navegação</div>
+      <a class="side-item active" href="#dashboard"><div class="side-icon">📊</div><div>Dashboard</div></a>
+      <a class="side-item" href="#inadimplencia"><div class="side-icon">🚨</div><div>Inadimplência</div></a>
+      <a class="side-item" href="#emdia"><div class="side-icon">👍</div><div>Em dia</div></a>
+      <a class="side-item" href="#gamification"><div class="side-icon">🎮</div><div>Gamification</div></a>
+      <a class="side-item" href="#ranking-positivo"><div class="side-icon">🏆</div><div>Ranking</div></a>
+      <a class="side-item" href="#impacto"><div class="side-icon">💸</div><div>Impacto</div></a>
+
+      <div class="section" style="margin-top:18px; padding:18px;">
+        <div class="label">Meta operacional</div>
+        <div style="font-size:18px; font-weight:800; margin:6px 0 10px;">Fechar o período sem nova cobrança</div>
+        <div class="subtle" style="font-size:14px;">1. Lançar horas pendentes<br>2. Corrigir projeto errado<br>3. Ajustar classificação de atividade</div>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <section class="section" id="emdia">
+        <div class="float-tag">Reconhecimento automático</div>
+        <div class="section-header">
+          <div>
+            <h3>DexPara do bem</h3>
+            <p class="subtle">Quem está no Excel e não apareceu na cobrança merece joinha.</p>
+          </div>
+          <div class="section-actions">
+            <div class="btn green">👍 Em dia</div>
+          </div>
+        </div>
+        <div class="cards-grid">
+          
+    <div class="person-card good">
+        <div class="person-top">
+            <div class="avatar good">👍</div>
+            <div class="person-head">
+                <h3>Alex Lucas</h3>
+                <span class="pill">+20 pontos</span>
+            </div>
+        </div>
+        <p>Apontamento em dia até o dia 26 e no projeto correto.</p>
+    </div>
+    
+
+    <div class="person-card good">
+        <div class="person-top">
+            <div class="avatar good">👍</div>
+            <div class="person-head">
+                <h3>Brigido Siga</h3>
+                <span class="pill">+20 pontos</span>
+            </div>
+        </div>
+        <p>Apontamento em dia até o dia 26 e no projeto correto.</p>
+    </div>
+    
+
+    <div class="person-card good">
+        <div class="person-top">
+            <div class="avatar good">👍</div>
+            <div class="person-head">
+                <h3>Everaldo Junior</h3>
+                <span class="pill">+20 pontos</span>
+            </div>
+        </div>
+        <p>Apontamento em dia até o dia 26 e no projeto correto.</p>
+    </div>
+    
+
+    <div class="person-card good">
+        <div class="person-top">
+            <div class="avatar good">👍</div>
+            <div class="person-head">
+                <h3>João Paopoli</h3>
+                <span class="pill">+20 pontos</span>
+            </div>
+        </div>
+        <p>Apontamento em dia até o dia 26 e no projeto correto.</p>
+    </div>
+    
+
+    <div class="person-card good">
+        <div class="person-top">
+            <div class="avatar good">👍</div>
+            <div class="person-head">
+                <h3>Jonyelson</h3>
+                <span class="pill">+20 pontos</span>
+            </div>
+        </div>
+        <p>Apontamento em dia até o dia 26 e no projeto correto.</p>
+    </div>
+    
+        </div>
+      </section>
+
+      <section class="section" id="inadimplencia">
+        <div class="section-header">
+          <div>
+            <h3>Grupo com pendência no dia 23</h3>
+            <p class="subtle">Ajuste pequeno no esforço, grande no fechamento.</p>
+          </div>
+          <div class="section-actions">
+            <div class="btn orange">⏳ Regularizar hoje</div>
+          </div>
+        </div>
+        <div class="cards-grid">
+          
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Alleph Nogueira de Oliveira</h3>
+                <span class="pill">Pendência: dia 23</span>
+            </div>
+        </div>
+        <p>Ajuste rápido, impacto grande no fechamento do projeto.</p>
+    </div>
+    
+
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Ana Barbara Nunes Costa</h3>
+                <span class="pill">Pendência: dia 23</span>
+            </div>
+        </div>
+        <p>Ajuste rápido, impacto grande no fechamento do projeto.</p>
+    </div>
+    
+
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Emerson Oliveira Bispo</h3>
+                <span class="pill">Pendência: dia 23</span>
+            </div>
+        </div>
+        <p>Ajuste rápido, impacto grande no fechamento do projeto.</p>
+    </div>
+    
+
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Kauan de Souza da Silva</h3>
+                <span class="pill">Pendência: dia 23</span>
+            </div>
+        </div>
+        <p>Ajuste rápido, impacto grande no fechamento do projeto.</p>
+    </div>
+    
+
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Mariana Lelis da Silva</h3>
+                <span class="pill">Pendência: dia 23</span>
+            </div>
+        </div>
+        <p>Ajuste rápido, impacto grande no fechamento do projeto.</p>
+    </div>
+    
+
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Murilo Sergio Rodrigues Junior</h3>
+                <span class="pill">Pendência: dia 23</span>
+            </div>
+        </div>
+        <p>Ajuste rápido, impacto grande no fechamento do projeto.</p>
+    </div>
+    
+
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Savio Vieira de Souza</h3>
+                <span class="pill">Pendência: dia 23</span>
+            </div>
+        </div>
+        <p>Ajuste rápido, impacto grande no fechamento do projeto.</p>
+    </div>
+    
+
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Thallys Lima Nobre</h3>
+                <span class="pill">Pendência: dia 23</span>
+            </div>
+        </div>
+        <p>Ajuste rápido, impacto grande no fechamento do projeto.</p>
+    </div>
+    
+        </div>
+      </section>
+
+      <section class="section" id="gamification">
+        <div class="section-header">
+          <div>
+            <h3>Pendências e ajustes específicos</h3>
+            <p class="subtle">Aqui não é só lançar. Tem projeto e classificação para corrigir.</p>
+          </div>
+          <div class="section-actions">
+            <div class="btn">🛠 Ajustes finos</div>
+          </div>
+        </div>
+        <div class="cards-grid">
+          
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Luiz Antonio Carlin</h3>
+                <span class="pill">-30 pontos</span>
+            </div>
+        </div>
+        <p>Ajustar os dias 10 e 11, que estão em outro projeto diferente do CNPJ Alfanumérico, e lançar os dias 20 e 23.</p>
+    </div>
+    
+
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Guillermo Ernesto Vazzano</h3>
+                <span class="pill">-25 pontos</span>
+            </div>
+        </div>
+        <p>Ajustar os dias 17, 18, 19, 20 e 23. Está como Desenvolvimento e deveria estar como Especificação Técnica.</p>
+    </div>
+    
+
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Elton Douglas Martins dos Santos</h3>
+                <span class="pill">-20 pontos</span>
+            </div>
+        </div>
+        <p>Lançar os dias 20 e 23.</p>
+    </div>
+    
+
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Rodrigo Schneider de Souza</h3>
+                <span class="pill">-20 pontos</span>
+            </div>
+        </div>
+        <p>Lançar os dias 20 e 23.</p>
+    </div>
+    
+
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Rumenik de Andrade Cabral</h3>
+                <span class="pill">-20 pontos</span>
+            </div>
+        </div>
+        <p>Lançar os dias 20 e 23.</p>
+    </div>
+    
+
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Letticya Sami Silva Souto</h3>
+                <span class="pill">-15 pontos</span>
+            </div>
+        </div>
+        <p>Faltam alguns dias para lançar. Verificar e regularizar.</p>
+    </div>
+    
+
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Thiago Felipe Souza Queiroz</h3>
+                <span class="pill">-15 pontos</span>
+            </div>
+        </div>
+        <p>Faltam alguns dias para lançar. Verificar e regularizar.</p>
+    </div>
+    
+
+    <div class="person-card danger">
+        <div class="person-top">
+            <div class="avatar warn">⚠</div>
+            <div class="person-head">
+                <h3>Rogério Pereira Tamizari</h3>
+                <span class="pill">-10 pontos</span>
+            </div>
+        </div>
+        <p>Ajustar o dia 16. Está como Especificação Técnica e deveria estar como Desenvolvimento.</p>
+    </div>
+    
+        </div>
+      </section>
+
+      <section class="section" id="ranking-positivo">
+        <div class="section-header">
+          <div>
+            <h3>Gamification do fechamento</h3>
+            <p class="subtle">Menos pendência, mais pontos. Mais retrabalho, menos pontos.</p>
+          </div>
+          <div class="section-actions">
+            <div class="btn green">+ Pontos</div>
+            <div class="btn orange">- Pontos</div>
+          </div>
+        </div>
+        <div class="cards-grid">
+          <div class="person-card good">
+            <div class="person-top">
+              <div class="avatar good">🏆</div>
+              <div class="person-head"><h3>Como ganhar pontos</h3><span class="pill">Boas práticas</span></div>
+            </div>
+            <p>+10 por lançar tudo no prazo<br>+5 por lançar no projeto correto<br>+5 por classificar a atividade corretamente<br>+3 por corrigir no mesmo dia da cobrança</p>
+          </div>
+          <div class="person-card danger">
+            <div class="person-top">
+              <div class="avatar warn">⚠</div>
+              <div class="person-head"><h3>Como perder pontos</h3><span class="pill">Retrabalho</span></div>
+            </div>
+            <p>-10 por pendência relevante<br>-10 por lançamento em projeto incorreto<br>-5 por classificação errada da atividade<br>-3 por precisar de nova cobrança</p>
+          </div>
+          <div class="person-card good">
+            <div class="person-top">
+              <div class="avatar good">🥇</div>
+              <div class="person-head"><h3>Faixas de performance</h3><span class="pill">Ranking</span></div>
+            </div>
+            <p>20+ pontos = Guardião do fechamento<br>10 a 19 = Operação sob controle<br>0 a 9 = Atenção<br>Abaixo de 0 = Impactando meu financeiro</p>
+          </div>
+          <div class="person-card danger">
+            <div class="person-top">
+              <div class="avatar warn">🎯</div>
+              <div class="person-head"><h3>Objetivo da rodada</h3><span class="pill">Meta do time</span></div>
+            </div>
+            <p>Zerar pendências, corrigir projeto e tipo de atividade e encerrar o período sem segunda chamada do gestor.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="ranking-negativo">
+        <div class="section-header">
+          <div>
+            <h3>Ranking positivo</h3>
+            <p class="subtle">Quem já deixou o fechamento feliz.</p>
+          </div>
+          <div class="section-actions">
+            <div class="btn green">🟢 Guardiões</div>
+          </div>
+        </div>
+        <div class="rank-grid">
+          
+    <div class="rank-card good">
+        <div class="rank-line">
+            <div class="rank-num">#1</div>
+            <div class="rank-name">👍 Alex Lucas</div>
+            <div class="rank-score">+20</div>
+        </div>
+        <div class="rank-note">Apontamento em dia até o dia 26 e no projeto correto.</div>
+    </div>
+    
+
+    <div class="rank-card good">
+        <div class="rank-line">
+            <div class="rank-num">#2</div>
+            <div class="rank-name">👍 Brigido Siga</div>
+            <div class="rank-score">+20</div>
+        </div>
+        <div class="rank-note">Apontamento em dia até o dia 26 e no projeto correto.</div>
+    </div>
+    
+
+    <div class="rank-card good">
+        <div class="rank-line">
+            <div class="rank-num">#3</div>
+            <div class="rank-name">👍 Everaldo Junior</div>
+            <div class="rank-score">+20</div>
+        </div>
+        <div class="rank-note">Apontamento em dia até o dia 26 e no projeto correto.</div>
+    </div>
+    
+
+    <div class="rank-card good">
+        <div class="rank-line">
+            <div class="rank-num">#4</div>
+            <div class="rank-name">👍 João Paopoli</div>
+            <div class="rank-score">+20</div>
+        </div>
+        <div class="rank-note">Apontamento em dia até o dia 26 e no projeto correto.</div>
+    </div>
+    
+
+    <div class="rank-card good">
+        <div class="rank-line">
+            <div class="rank-num">#5</div>
+            <div class="rank-name">👍 Jonyelson</div>
+            <div class="rank-score">+20</div>
+        </div>
+        <div class="rank-note">Apontamento em dia até o dia 26 e no projeto correto.</div>
+    </div>
+    
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <div>
+            <h3>Ranking negativo</h3>
+            <p class="subtle">Quem ainda precisa virar o jogo hoje.</p>
+          </div>
+          <div class="section-actions">
+            <div class="btn orange">🔴 Requer ação</div>
+          </div>
+        </div>
+        <div class="rank-grid">
+          
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#1</div>
+            <div class="rank-name">Luiz Antonio Carlin</div>
+            <div class="rank-score">-30</div>
+        </div>
+        <div class="rank-note">Ajustar os dias 10 e 11, que estão em outro projeto diferente do CNPJ Alfanumérico, e lançar os dias 20 e 23.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#2</div>
+            <div class="rank-name">Guillermo Ernesto Vazzano</div>
+            <div class="rank-score">-25</div>
+        </div>
+        <div class="rank-note">Ajustar os dias 17, 18, 19, 20 e 23. Está como Desenvolvimento e deveria estar como Especificação Técnica.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#3</div>
+            <div class="rank-name">Elton Douglas Martins dos Santos</div>
+            <div class="rank-score">-20</div>
+        </div>
+        <div class="rank-note">Lançar os dias 20 e 23.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#4</div>
+            <div class="rank-name">Rodrigo Schneider de Souza</div>
+            <div class="rank-score">-20</div>
+        </div>
+        <div class="rank-note">Lançar os dias 20 e 23.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#5</div>
+            <div class="rank-name">Rumenik de Andrade Cabral</div>
+            <div class="rank-score">-20</div>
+        </div>
+        <div class="rank-note">Lançar os dias 20 e 23.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#6</div>
+            <div class="rank-name">Letticya Sami Silva Souto</div>
+            <div class="rank-score">-15</div>
+        </div>
+        <div class="rank-note">Faltam alguns dias para lançar. Verificar e regularizar.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#7</div>
+            <div class="rank-name">Thiago Felipe Souza Queiroz</div>
+            <div class="rank-score">-15</div>
+        </div>
+        <div class="rank-note">Faltam alguns dias para lançar. Verificar e regularizar.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#8</div>
+            <div class="rank-name">Alleph Nogueira de Oliveira</div>
+            <div class="rank-score">-10</div>
+        </div>
+        <div class="rank-note">Lançar o dia 23.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#9</div>
+            <div class="rank-name">Ana Barbara Nunes Costa</div>
+            <div class="rank-score">-10</div>
+        </div>
+        <div class="rank-note">Lançar o dia 23.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#10</div>
+            <div class="rank-name">Emerson Oliveira Bispo</div>
+            <div class="rank-score">-10</div>
+        </div>
+        <div class="rank-note">Lançar o dia 23.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#11</div>
+            <div class="rank-name">Kauan de Souza da Silva</div>
+            <div class="rank-score">-10</div>
+        </div>
+        <div class="rank-note">Lançar o dia 23.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#12</div>
+            <div class="rank-name">Mariana Lelis da Silva</div>
+            <div class="rank-score">-10</div>
+        </div>
+        <div class="rank-note">Lançar o dia 23.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#13</div>
+            <div class="rank-name">Murilo Sergio Rodrigues Junior</div>
+            <div class="rank-score">-10</div>
+        </div>
+        <div class="rank-note">Lançar o dia 23.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#14</div>
+            <div class="rank-name">Savio Vieira de Souza</div>
+            <div class="rank-score">-10</div>
+        </div>
+        <div class="rank-note">Lançar o dia 23.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#15</div>
+            <div class="rank-name">Thallys Lima Nobre</div>
+            <div class="rank-score">-10</div>
+        </div>
+        <div class="rank-note">Lançar o dia 23.</div>
+    </div>
+    
+
+    <div class="rank-card bad">
+        <div class="rank-line">
+            <div class="rank-num">#16</div>
+            <div class="rank-name">Rogério Pereira Tamizari</div>
+            <div class="rank-score">-10</div>
+        </div>
+        <div class="rank-note">Ajustar o dia 16. Está como Especificação Técnica e deveria estar como Desenvolvimento.</div>
+    </div>
+    
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="footer">Template neon premium pronto para print e compartilhamento interno</div>
+</div>
+</body>
+</html>
